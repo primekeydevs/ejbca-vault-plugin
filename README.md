@@ -150,7 +150,7 @@ To issue a new certificate, write a CSR to the sign endpoint including the profi
 
 Issuing a certificate requires three properties:
 * **csr** - A PKCS#10 CSR in PEM format
-* **username** - The username of an [End Entity](https://doc.primekey.com/ejbca/ejbca-operations/ejbca-ca-concept-guide/end-entities-overview) in EJBCA that the certificate will be issued for. If you are used to using EJBCA through the UI, you know a one-time enrollment code is often used, a long random enrolment code (one time) is used in the background by the plugin
+* **username** - The username of an [End Entity](https://doc.primekey.com/ejbca/ejbca-operations/ejbca-ca-concept-guide/end-entities-overview) in EJBCA that the certificate will be issued for. If you are used to using EJBCA through the UI, you know a one-time enrollment code is often used, a long random enrollment code (one time) is used in the background by the plugin
 
 ```
 vault write ejbca/sign/TLSServer csr=@csr.pem username=tomas
