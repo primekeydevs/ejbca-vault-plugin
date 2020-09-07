@@ -183,6 +183,6 @@ vault write ejbca/sign/PROFILE1 csr=@csr.pem username=user1
 Features that are not implemented in this version of the plugin, but can be potential for future feature enhancements are:
 * Custom certificate validity. Currently the validity is specified in the Certificate Profile, while EJBCA has capability of custom request validity, this is not available through the plugin.
 * Custom subject DN and altName. Currently the subject DN and the altName are taken from the CSR (and validated against the profiles), while EJBCA has the capability of non-CSR subject attributes, this is not available through the plugin.
-* Server side generated keystores. Currently only CSR based certificate issuance is available in the plugin, while EJBCA has capabiity to issue server side generated private keys (delivered as for example a PKCS#12 keystrore), this command is not implemented in the plugin
+* Server side generated keystores. Currently only CSR based certificate issuance is available in the plugin, while EJBCA has capabiity to issue server side generated private keys (delivered as for example a PKCS#12 keystrore), EJBCA can not do this from scratch using REST API yet, hence this command is not implemented in the plugin
 * Randomize username, for some use cases the username to issue for is not relevant, and we can simply use random username instead
 * Keep the private key, used to authenticate the plugin to EJBCA, in itself as a secret in Vault (additional private key protection)
