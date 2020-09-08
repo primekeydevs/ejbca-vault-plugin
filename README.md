@@ -14,7 +14,7 @@ Apache License 2.0.
 
 HashiCorp Vault is a popular product to manage secrets, and when using microservices at scale, there are many services and thus many secrets to manage. HashiCorp Vault comes with a built in Certification Authority, but using that standalone will create a separate PKI which is not connected to the corporate PKI, which is not desired in many organization as it will not meet regulatory or other security requirements. In order to incorporate Vault PKI into a controlled, corporately managed PKI there are (at least) two different ways.
 
-* Plug into your own issuing CA using a Vaule secrets plugin, 
+* Plug into your own issuing CA using a Vault secrets plugin, 
 * or use the Vault provisions to root to an external CA rather than self-sign its own CA certificate
 
 The EJBCA Vault secrets plugin, and a drop in replacement of Vault's built in PKI, that allows you to plug Vault into your issuing CA. You will use Vault to issue certificates, just as you would with the Vault built in CA, but the issuance come from EJBCA. 
@@ -25,7 +25,7 @@ The EJBCA Vault plugin uses the [EJBCA REST API](https://doc.primekey.com/ejbca/
 
 ## EJBCA Requirements
 To issue certificates from EJBCA, through Vault, has the same requirements as issuing through any RA.
-* A [CA](https://doc.primekey.com/ejbca/ejbca-operations/ejbca-ca-concept-guide/certificate-authority-overview) in EJBCA, that can issue the desired type of certificates, usign the desired algorithm
+* A [CA](https://doc.primekey.com/ejbca/ejbca-operations/ejbca-ca-concept-guide/certificate-authority-overview) in EJBCA, that can issue the desired type of certificates, using the desired algorithm
 * A [Certificate Profile](https://doc.primekey.com/ejbca/ejbca-operations/ejbca-ca-concept-guide/certificate-profiles-overview), configured to issue the desired type of certificates from the CA
 * An [End Entity Profile](https://doc.primekey.com/ejbca/ejbca-operations/ejbca-ca-concept-guide/end-entities-overview/end-entity-profiles-overview), configured to issue certificates with the desired Subject fields from the CA, using the Certificate Profile
 * A [Role](https://doc.primekey.com/ejbca/ejbca-operations/ejbca-ca-concept-guide/roles-and-access-rules) with Access Rules, describing what Vault is allowed to issue
