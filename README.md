@@ -11,7 +11,7 @@ To report a problem or suggest a new feature, use the **[Issues](../../issues)**
 Apache License 2.0.
 
 # EJBCA Vault plugin
-
+ 
 HashiCorp Vault is a popular product to manage secrets, and when using microservices at scale, there are many services and thus many secrets to manage. HashiCorp Vault comes with a built in Certification Authority, but using that standalone will create a separate PKI which is not connected to the corporate PKI, which is not desired in many organization as it will not meet regulatory or other security requirements. In order to incorporate Vault PKI into a controlled, corporately managed PKI there are (at least) two different ways.
 
 * Plug into your own issuing CA using a Vault secrets plugin, 
@@ -146,23 +146,23 @@ The read operation will display these configuration properties (as written to JS
 
 ## Usage
 
-To issue a new certificate, write a CSR to the sign endpoint including the profile identifier. THe profile identifier points to the configuration with the specified CA, Certificate- and End Entity Profile. 
+To issue a new certificate, write a CSR to the _enrollCSR_ endpoint including the profile identifier. THe profile identifier points to the configuration with the specified CA, Certificate- and End Entity Profile. 
 
 Issuing a certificate requires three properties:
 * **csr** - A PKCS#10 CSR in PEM format
 * **username** - The username of an [End Entity](https://doc.primekey.com/ejbca/ejbca-operations/ejbca-ca-concept-guide/end-entities-overview) in EJBCA that the certificate will be issued for. If you are used to using EJBCA through the UI, you know a one-time enrollment code is often used, a long random enrollment code (one time) is used in the background by the plugin
 
 ```
-vault write ejbca/sign/TLSServer csr=@csr.pem username=tomas
+vault write ejbca/enrollCSR/TLSServer csr=@csr.pem username=tomas
 ```
 
-The list opereation will return the serial numbers of all the certificates in the secrets engine for the specific CA profile. The read operation with the required serial value will return the certificate and its private key if available. The serial number is the hexadecima representation of the serial, a long random number.
+Issued certificates are stored to the _issued_ path in Vault. The list opereation will return the serial numbers of all the certificates in the secrets engine for the specific CA profile. The read operation with the required serial value will return the certificate and its private key if available. The serial number is the hexadecima representation of the serial, a long random number.
 
->`vault list ejbca/sign/TLSServer`
+>`vault list ejbca/issued/TLSServer`
 
->`vault list ejbca/sign/TLSServer serial=6718965123650008458`
+>`vault read ejbca/issued/TLSServer serial=6718965123650008458`
 
->`vault read -field=certificate ejbca/sign/TLSServer serial=6718965123650008458` 
+>`vault read -field=certificate ejbca/issued/TLSServer serial=6718965123650008458` 
 
 ### Multiple Configurations
 You can enable another configuration simply by configuring a different profileId (the last part of the path). 
@@ -171,12 +171,14 @@ Profile 1:
 ```
 vault write ejbca/config/TLSServer pem_bundle=@admin-bundle.pem url=https://ejbca.example.com:8443/ejbca/ejbca-rest-api/v1 cacerts=@admin-TLS-chain.pem caname=TLSAssuredCA certprofile=TLSServer eeprofile=InternalTLSServer
 vault write ejbca/sign/TLSServer csr=@csr.pem username=tomas
+vault write ejbca/enrollCSR/TLSServer csr=@csr.pem username=tomas
 ```
 
 Profile 2:
 ```
 vault write ejbca/config/PROFILE1 pem_bundle=@admin-bundle.pem url=https://ejbca.example.com:8443/ejbca/ejbca-rest-api/v1 cacerts=@admin-TLS-chain.pem caname=MyOtherCA certprofile=MyCertProfile eeprofile=MyEEProfile
 vault write ejbca/sign/PROFILE1 csr=@csr.pem username=user1
+vault list ejbca/issued/PROFILE1
 ```
 
 # Future Improvements
