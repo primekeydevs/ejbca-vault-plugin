@@ -30,7 +30,7 @@ To issue certificates from EJBCA, through Vault, has the same requirements as is
 * An [End Entity Profile](https://doc.primekey.com/ejbca/ejbca-operations/ejbca-ca-concept-guide/end-entities-overview/end-entity-profiles-overview), configured to issue certificates with the desired Subject fields from the CA, using the Certificate Profile
 * A [Role](https://doc.primekey.com/ejbca/ejbca-operations/ejbca-ca-concept-guide/roles-and-access-rules) with Access Rules, describing what Vault is allowed to issue
 * A Role Member, which is Vault, beloning to the corresponding Role
-* A Client certificate and proivate key, used to authenticate the Role Member over mutually authenticated TLS
+* A Client certificate and private key, used to authenticate the Role Member over mutually authenticated TLS
 
 ## Build
 
@@ -45,10 +45,10 @@ After that you can build the plugin.
 Build the plugin, using Go, with the following command:
 
 ```
-> go build -o out/ejbca-vault-plugin
+> go build -o out/ejbca-vault-plugin-v1
 ```
 
-This will build the plugin and store the resulting executable as `out/ejbca-vault-plugin`
+This will build the plugin and store the resulting executable as `out/ejbca-vault-plugin-v1`
 
 
 ## Installation
@@ -59,7 +59,7 @@ The EJBCA Vault plugin is installed like other [Vault plugins](https://www.vault
 Managing Vault in a production enviroinment is outside the scope of this instruction, so we start a development server with an appointed plugin directory (straight into our build directory), and a defined root token, change this root token to something random of your own:
 
 ```
-vault server -dev -dev-root-token-id=gUgvfVcVzdKH -dev-plugin-dir=/home/user/git/ejbca-vault-plugin/out -log-level=debug
+vault server -dev -dev-root-token-id=gUgvfVcVzdKH -dev-plugin-dir=/home/user/git/ejbca-vault-plugin-v1/out -log-level=debug
 ```
 
 To use the vault CLI you need to set environment variables:
@@ -75,8 +75,8 @@ Now you are ready to run Vault CLI commands.
 To register the plugin you must first get the SHA256 hash of the plugin executable, after which you can register the plugin with Vault:
 
 ```
-SHA256=$(sha256sum /home/user/git/ejbca-vault-plugin/out/ejbca_vault_plugin| cut -d' ' -f1)
-vault write sys/plugins/catalog/ejbca-vault-plugin sha256="${SHA256}" command="ejbca-vault-plugin"
+SHA256=$(sha256sum /home/user/git/ejbca-vault-plugin/out/ejbca-vault-plugin-v1| cut -d' ' -f1)
+vault plugin register sha256="${SHA256}" secret ejbca-vault-plugin-v1"
 ```
 
 `"${SHA256}"` is the SHA256 of the Vault plugin executable, and can be specified manually on the command line if you prefer that instead of using a shell variable. 
@@ -84,22 +84,22 @@ vault write sys/plugins/catalog/ejbca-vault-plugin sha256="${SHA256}" command="e
 After registration you can enable the plugin, which gives a path for further commands to vault to use the plugin:
 
 ```
-vault secrets enable -path=ejbca ejbca-vault-plugin
+vault secrets enable -path=ejbcav1 ejbca-vault-plugin-v1
 ```
 
 ### Disable plugin
 If you want to disable the plugin, without re-registering it, that can easily be done:
 
 ```
-vault secrets disable ejbca
+vault secrets disable ejbcav1
 ```
 
-Note that disabling the plugin will remove all the certificates stored, i.e. the 'list' command below will return empty. When upgrading the plugin in production another method is recommended.
+Note that disabling the plugin will remove all the certificates stored, i.e. the 'list' command below will return empty. When upgrading the plugin in production another method is recommended which is to include the version of the plugin as -vX where X is the version of the plugin.  Details on Hashicorp plugin upgrade are documented at [Upgrading Vault plugins](https://www.vaultproject.io/docs/upgrading/plugins).
 
 ### Rebuild and re-deploy
 Example command how to perform a full rebuild - redeploy cycle (for example when modifying the plugin) can be found in the `redeploy.sh` file in this repo.
 
-Note that disabling the plugin will remove all the certificates stored, i.e. the 'list' command below will return empty. When upgrading the plugin in production another method is recommended.
+Note that disabling the plugin will remove all the certificates stored, i.e. the 'list' command below will return empty. When upgrading the plugin in production another method is recommended which is to include the version of the plugin as -vX where X is the version of the plugin.  Details on Hashicorp plugin upgrade are documented at [Upgrading Vault plugins](https://www.vaultproject.io/docs/upgrading/plugins).
 
 ## Configuration
 
@@ -123,26 +123,28 @@ The configuration of CA and profiles to issue from requires three properties:
 #### Example
 
 ```
-vault write ejbca/config/TLSServer pem_bundle=@admin-bundle.pem url=https://ejbca.example.com:8443/ejbca/ejbca-rest-api/v1 cacerts=@admin-TLS-chain.pem caname=TLSAssuredCA certprofile=TLSServer eeprofile=InternalTLSServer
+vault write ejbcav1/config/TLSServer pem_bundle=@admin-bundle.pem url=https://ejbca.example.com:8443/ejbca/ejbca-rest-api/v1 cacerts=@admin-TLS-chain.pem caname=TLSAssuredCA certprofile=TLSServer eeprofile=InternalTLSServer
 ```
 
-The above write operation will connect to EJBCA for a connecting test and set the configuration properties for issuing. 
+The above write operation will connect to EJBCA and list available CAs (that the client certificate have access to) and set the configuration properties if the requested **caname** is available (such as the CA subject DN).
 
 The read operation will display these configuration properties (as written to JSON in Vault).
 
->`vault read ejbca/config/TLSServer`
+>`vault read ejbcav1/config/TLSServer`
 
->`vault read -field=CACerts ejbca/config/TLSServer`
+>`vault read -field=CACerts ejbcav1/config/TLSServer`
 
->`vault read -field=PEMBundle ejbca/config/TLSServer`
+>`vault read -field=PEMBundle ejbcav1/config/TLSServer`
 
->`vault read -field=URL ejbca/config/TLSServer`
+>`vault read -field=URL ejbcav1/config/TLSServer`
 
->`vault read -field=CaName ejbca/config/TLSServer`
+>`vault read -field=CaName ejbcav1/config/TLSServer`
 
->`vault read -field=CertProfile ejbca/config/TLSServer`
+>`vault read -field=SubjectDn ejbcav1/config/TLSServer`
 
->`vault read -field=EEProfile ejbca/config/TLSServer`
+>`vault read -field=CertProfile ejbcav1/config/TLSServer`
+
+>`vault read -field=EEProfile ejbcav1/config/TLSServer`
 
 ## Usage
 
@@ -153,24 +155,24 @@ Issuing a certificate requires two properties:
 * **username** - The username of an [End Entity](https://doc.primekey.com/ejbca/ejbca-operations/ejbca-ca-concept-guide/end-entities-overview) in EJBCA that the certificate will be issued for. If you are used to using EJBCA through the UI, you know a one-time enrollment code is often used, a long random enrollment code (one time) is used in the background by the plugin
 
 ```
-vault write ejbca/enrollCSR/TLSServer csr=@csr.pem username=tomas
+vault write ejbcav1/enrollCSR/TLSServer csr=@csr.pem username=tomas
 ```
 
-Issued certificates are stored to the _issued_ path in Vault storage. The list opereation will return the serial numbers of all the certificates in the secrets engine for the specific CA profile. The read operation with the required serial value will return the certificate and its private key if available. The serial number is the hexadecima representation of the serial, a long random number.
+Issued certificates are stored to the _issued_ path in Vault storage. The list opereation will return the serial numbers of all the certificates in the secrets engine for the specific CA profile. The read operation with the required serial value will return the certificate and its private key if available. The serial number is the hexadecimal representation of the serial, a long random number.
 
->`vault list ejbca/issued/TLSServer`
+>`vault list ejbcav1/issued/TLSServer`
 
->`vault read ejbca/issued/TLSServer serial=6718965123650008458`
+>`vault read ejbcav1/issued/TLSServer serial=6718965123650008458`
 
->`vault read -field=certificate ejbca/issued/TLSServer serial=6718965123650008458` 
+>`vault read -field=certificate ejbcav1/issued/TLSServer serial=6718965123650008458` 
 
-Revoking a certificate requires three properties:
-* **issuerdn** - The issuer DN of the certificate to revoke
+Revoking a certificate requires two properties:
 * **serial** - The hex encoded serial number of the certificate to revoke, the same value as displayed using the list command for certificates in Vault storage
 * **reason** - The revocation reason, must be one of NOT_REVOKED, UNSPECIFIED, KEY_COMPROMISE, CA_COMPROMISE, AFFILIATION_CHANGED, SUPERSEDED, CESSATION_OF_OPERATION, CERTIFICATE_HOLD, REMOVE_FROM_CRL, PRIVILEGES_WITHDRAWN, AA_COMPROMISE
 
+The issuer DN of the certificate to revoke is read from the CA configuration and does not have to be entered.
 ```
-vault write ejbca/revokeCert/TLSServer issuerdn='CN=Management CA,O=PrimeKey,C=SE' serial=2F79E1875F2F6D276BB619EB5FE9B499D71F645E reason=AFFILIATION_CHANGED
+vault write ejbcav1/revokeCert/TLSServer serial=2F79E1875F2F6D276BB619EB5FE9B499D71F645E reason=AFFILIATION_CHANGED
 ```
 After revocation the certificate is removed from Vault storage.
 
@@ -179,16 +181,16 @@ You can enable another configuration simply by configuring a different profileId
 
 Profile 1:
 ```
-vault write ejbca/config/TLSServer pem_bundle=@admin-bundle.pem url=https://ejbca.example.com:8443/ejbca/ejbca-rest-api/v1 cacerts=@admin-TLS-chain.pem caname=TLSAssuredCA certprofile=TLSServer eeprofile=InternalTLSServer
-vault write ejbca/sign/TLSServer csr=@csr.pem username=tomas
-vault write ejbca/enrollCSR/TLSServer csr=@csr.pem username=tomas
+vault write ejbcav1/config/TLSServer pem_bundle=@admin-bundle.pem url=https://ejbca.example.com:8443/ejbca/ejbca-rest-api/v1 cacerts=@admin-TLS-chain.pem caname=TLSAssuredCA certprofile=TLSServer eeprofile=InternalTLSServer
+vault write ejbcav1/sign/TLSServer csr=@csr.pem username=tomas
+vault write ejbcav1/enrollCSR/TLSServer csr=@csr.pem username=tomas
 ```
 
 Profile 2:
 ```
-vault write ejbca/config/PROFILE1 pem_bundle=@admin-bundle.pem url=https://ejbca.example.com:8443/ejbca/ejbca-rest-api/v1 cacerts=@admin-TLS-chain.pem caname=MyOtherCA certprofile=MyCertProfile eeprofile=MyEEProfile
-vault write ejbca/sign/PROFILE1 csr=@csr.pem username=user1
-vault list ejbca/issued/PROFILE1
+vault write ejbcav1/config/PROFILE1 pem_bundle=@admin-bundle.pem url=https://ejbca.example.com:8443/ejbca/ejbca-rest-api/v1 cacerts=@admin-TLS-chain.pem caname=MyOtherCA certprofile=MyCertProfile eeprofile=MyEEProfile
+vault write ejbcav1/sign/PROFILE1 csr=@csr.pem username=user1
+vault list ejbcav1/issued/PROFILE1
 ```
 
 # Future Improvements
