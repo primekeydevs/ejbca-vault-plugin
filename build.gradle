@@ -1,0 +1,15 @@
+plugins {
+    id 'com.github.blindpirate.gogradle' version '0.11.3'
+}
+
+golang {
+    packagePath = 'ejbca-vault-plugin'
+}
+
+dependencies {
+    golang {
+        build 'github.com/hashicorp/vault@1.0.3'
+        build 'github.com/pkg/errors'
+        build 'github.com/golang.org/x/crypto'
+    }
+}

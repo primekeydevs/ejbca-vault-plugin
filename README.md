@@ -45,7 +45,7 @@ After that you can build the plugin.
 Build the plugin, using Go, with the following command:
 
 ```
-> go build -o out/ejbca-vault-plugin-v1
+> go build -o out/ejbca-vault-plugin
 ```
 
 This will build the plugin and store the resulting executable as `out/ejbca-vault-plugin-v1`
