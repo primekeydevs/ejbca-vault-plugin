@@ -11,14 +11,13 @@ To report a problem or suggest a new feature, use the **[Issues](../../issues)**
 Apache License 2.0.
 
 # EJBCA Vault plugin
- 
-HashiCorp Vault is a popular product to manage secrets, and when using microservices at scale, there are many services and thus many secrets to manage. HashiCorp Vault comes with a built in Certification Authority, but using that standalone will create a separate PKI which is not connected to the corporate PKI, which is not desired in many organization as it will not meet regulatory or other security requirements. In order to incorporate Vault PKI into a controlled, corporately managed PKI there are (at least) two different ways.
 
-* Plug into your own issuing CA using a Vault secrets plugin, 
-* or use the Vault provisions to root to an external CA rather than self-sign its own CA certificate
+HashiCorp Vault is a popular product to manage secrets and when using microservices at scale, there are many services and secrets to manage. HashiCorp Vault includes a built-in Certification Authority (CA), however using that standalone CA will create a separate PKI not connected to the corporate PKI. A separate PKI is often not desired in organizations as it will not meet regulatory or other security requirements. To incorporate Vault PKI into a controlled corporately managed PKI, you could:
 
-The EJBCA Vault secrets plugin, and a drop in replacement of Vault's built in PKI, that allows you to plug Vault into your issuing CA. You will use Vault to issue certificates, just as you would with the Vault built in CA, but the issuance come from EJBCA. 
+* Plug into your own issuing CA using a Vault secrets plugin.
+* Use the Vault provisions to root to an external CA rather than self-sign its own CA certificate.
 
+The EJBCA Vault secrets plugin is a drop in replacement of Vault's built-in PKI, that allows you to plug Vault into your issuing CA. The plugin enables you to use Vault to issue certificates, just as you would with the Vault built-in CA, but the issuance comes from EJBCA.
 
 ## Security
 The EJBCA Vault plugin uses the [EJBCA REST API](https://doc.primekey.com/ejbca/ejbca-operations/ejbca-ca-concept-guide/protocols/ejbca-rest-interface) to communicate with EJBCA, so the EJBCA instance can be anywhere where is reachable with https connections. The EJBCA REST API uses mutually authenticated TLS connections (https/mTLS). To EJBCA Vault acts as a PKI Registration Authority, and using the [role based access control](https://doc.primekey.com/ejbca/ejbca-operations/ejbca-ca-concept-guide/roles-and-access-rules) in EJBCA the capabilities that Vault has in the EJBCA instance can be controled fine grained. Vault will not be able to issue certificates from other CAs managed than the ones allowed in the EJBCA instance. 
