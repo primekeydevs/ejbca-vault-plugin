@@ -175,6 +175,11 @@ vault write ejbcav1/revokeCert/TLSServer serial=2F79E1875F2F6D276BB619EB5FE9B499
 ```
 After revocation the certificate is removed from Vault storage.
 
+You can also make calls to Vault using REST API, with curl. For example:
+```
+curl --header "X-Vault-Token: gUgvfVcVzdKH" http://127.0.0.1:8200/v1/ejbcav1/issued/TLSServer?serial=2339A24D17C9BC856F483A57D4DCB908362F39B2
+```
+
 ### Multiple Configurations
 You can enable another configuration simply by configuring a different profileId (the last part of the path). 
 
