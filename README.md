@@ -75,7 +75,7 @@ To register the plugin you must first get the SHA256 hash of the plugin executab
 
 ```
 SHA256=$(sha256sum /home/user/git/ejbca-vault-plugin/out/ejbca-vault-plugin-v1| cut -d' ' -f1)
-vault plugin register -sha256="${SHA256}" secret ejbca-vault-plugin-v1"
+vault plugin register -sha256="${SHA256}" secret ejbca-vault-plugin-v1
 ```
 
 `"${SHA256}"` is the SHA256 of the Vault plugin executable, and can be specified manually on the command line if you prefer that instead of using a shell variable. 
