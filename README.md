@@ -98,7 +98,7 @@ Note that disabling the plugin will remove all the certificates stored, i.e. the
 ### Rebuild and re-deploy
 Example command how to perform a full rebuild - redeploy cycle (for example when modifying the plugin) can be found in the `redeploy.sh` file in this repo.
 
-Note that disabling the plugin will remove all the certificates stored, i.e. the 'list' command below will return empty. When upgrading the plugin in production another method is recommended which is to include the version of the plugin as -vX where X is the version of the plugin.  Details on Hashicorp plugin upgrade are documented at [Upgrading Vault plugins](https://www.vaultproject.io/docs/upgrading/plugins).
+Note that disabling the plugin will remove all the certificates stored, as noted above.
 
 ## Configuration
 
@@ -147,11 +147,11 @@ The read operation will display these configuration properties (as written to JS
 
 ## Usage
 
-To issue a new certificate, write a CSR to the _enrollCSR_ endpoint including the profile identifier. THe profile identifier points to the configuration with the specified CA, Certificate- and End Entity Profile. 
+To issue a new certificate, write a CSR to the _enrollCSR_ endpoint including the profile identifier. The profile identifier points to the configuration with the specified CA, Certificate- and End Entity Profile. 
 
 Issuing a certificate requires two properties:
 * **csr** - A PKCS#10 CSR in PEM format
-* **username** - The username of an [End Entity](https://doc.primekey.com/ejbca/ejbca-operations/ejbca-ca-concept-guide/end-entities-overview) in EJBCA that the certificate will be issued for. If you are used to using EJBCA through the UI, you know a one-time enrollment code is often used, a long random enrollment code (one time) is used in the background by the plugin
+* **username** - The username of an [End Entity](https://doc.primekey.com/ejbca/ejbca-operations/ejbca-ca-concept-guide/end-entities-overview) in EJBCA that the certificate will be issued for. If you are used to using EJBCA through the UI, you know a one-time enrollment code is often used, a long random enrollment code (one time) is used in the background by the plugin.
 
 ```
 vault write ejbcav1/enrollCSR/TLSServer csr=@csr.pem username=tomas
