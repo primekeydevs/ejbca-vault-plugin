@@ -93,12 +93,10 @@ If you want to disable the plugin, without re-registering it, that can easily be
 vault secrets disable ejbcav1
 ```
 
-Note that disabling the plugin will remove all the certificates stored, i.e. the 'list' command below will return empty. When upgrading the plugin in production another method is recommended which is to include the version of the plugin as -vX where X is the version of the plugin.  Details on Hashicorp plugin upgrade are documented at [Upgrading Vault plugins](https://www.vaultproject.io/docs/upgrading/plugins).
+Note that when running Vault in Dev mode (as the example vault start command above) disabling the plugin will remove all the certificates stored, i.e. the 'list' command below will return empty. When upgrading the plugin in production another method is recommended which is to include the version of the plugin as -vX where X is the version of the plugin. Details on Hashicorp plugin upgrade are documented at [Upgrading Vault plugins](https://www.vaultproject.io/docs/upgrading/plugins).
 
 ### Rebuild and re-deploy
 Example command how to perform a full rebuild - redeploy cycle (for example when modifying the plugin) can be found in the `redeploy.sh` file in this repo.
-
-Note that disabling the plugin will remove all the certificates stored, as noted above.
 
 ## Configuration
 
