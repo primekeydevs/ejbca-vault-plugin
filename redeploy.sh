@@ -25,6 +25,12 @@ fi
 
 # Build the plugin
 go build -o out/ejbca-vault-plugin-v$parameterB
+retVal=$?
+if [ $retVal -ne 0 ]; then
+    echo "Error compiling Go"
+    exit $retVal
+fi
+
 SHA256=`sha256sum out/ejbca-vault-plugin-v$parameterB | awk '{ print $1 }'`
 echo "SHA256: $SHA256"
 
